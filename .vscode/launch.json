@@ -3,14 +3,14 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Observador Local Debug",
+      "name": "Watcher Local Debug",
       "request": "launch",
-      "cwd": "${workspaceRoot}/modules/observador",
+      "cwd": "${workspaceRoot}/modules/watcher",
       "console": "internalConsole",
       "stopOnEntry": false,
       "mainClass": "com.exemplo.iot.App",
       "args": "",
-      "projectName": "observador",
+      "projectName": "watcher",
       "env": {
         "EdgeHubConnectionString": "${config:azure-iot-edge.EdgeHubConnectionString}",
         "EdgeModuleCACertificateFile": "${config:azure-iot-edge.EdgeModuleCACertificateFile}"
@@ -18,7 +18,7 @@
     },
     {
       "type": "java",
-      "name": "Observador Remote Debug",
+      "name": "Watcher Remote Debug",
       "request": "attach",
       "hostName": "localhost",
       "port": 5005

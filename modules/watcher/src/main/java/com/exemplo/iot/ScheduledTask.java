@@ -3,8 +3,10 @@ package com.exemplo.iot;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -25,12 +27,12 @@ public class ScheduledTask {
     public void task() throws IOException {
         ClassifierAndSource classifierSource = FactoryImageClassifier.nin_imagenet();
 
-        File modelPath = DeepBoofDataBaseOps.downloadModel(classifierSource.getSource(), new File("download_data"));
+        File modelPath = DeepBoofDataBaseOps.downloadModel(classifierSource.getSource(), new File("/models"));
 
         ImageClassifier<Planar<GrayF32>> classifier = classifierSource.getClassifier();
         classifier.loadModel(modelPath);
 
-        byte[] imageByte = Base64.getDecoder().decode(getImage().getBytes());
+        byte[] imageByte = Base64.getDecoder().decode(getEncodedImage().getBytes());
         ByteArrayInputStream imageInputStream = new ByteArrayInputStream(imageByte);
         BufferedImage bufferedImage = ImageIO.read(imageInputStream);
 
@@ -41,7 +43,12 @@ public class ScheduledTask {
         classifier.classify(resultImage);
     }
 
-    private String getImage() {
-        return new ImageGetter().getImage();
+    private String getEncodedImage() throws FileNotFoundException {
+        File imageFile = new File("image.txt");
+        Scanner reader = new Scanner(imageFile);
+        String line = reader.nextLine();
+        reader.close();
+
+        return line;
     }
 }

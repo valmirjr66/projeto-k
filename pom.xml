@@ -102,6 +102,6 @@
     </profiles>
     <modules>
         <module>core</module>
-        <module>modules/observador</module>
+        <module>modules/watcher</module>
     </modules>
 </project>
