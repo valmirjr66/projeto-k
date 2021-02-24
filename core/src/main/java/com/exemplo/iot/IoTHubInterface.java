@@ -1,37 +1,43 @@
 package com.exemplo.iot;
 
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
+
 import com.microsoft.azure.sdk.iot.device.IotHubClientProtocol;
 import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.MessageCallback;
 import com.microsoft.azure.sdk.iot.device.ModuleClient;
+import com.microsoft.azure.sdk.iot.device.exceptions.ModuleClientException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
-// @Service
-public class IotHubMessageService implements InitializingBean {
-    private static final Logger logger = LoggerFactory.getLogger(IotHubMessageService.class);
+@Component
+public class IoTHubInterface {
+    private static final Logger logger = LoggerFactory.getLogger(IoTHubInterface.class);
 
     private static ModuleClient client;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void createIotHubClient() {
         try {
             IotHubClientProtocol protocol = IotHubClientProtocol.MQTT;
             client = ModuleClient.createFromEnvironment(protocol);
             client.open();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+        } catch (ModuleClientException | IOException exception) {
+            logger.error("Error while creating client for IoT Hub.", exception);
         }
     }
 
     public void sendMessage(Message message, String output) {
-        client.sendEventAsync(message, (IotHubStatusCode status, Object context) -> {
-            logger.info("Message set with status {}.", status);
-        }, message, output);
+        client.sendEventAsync(message, this::sendMessageCallback, message, output);
+    }
+
+    private void sendMessageCallback(IotHubStatusCode status, Object context) {
+        logger.info("Message sent with status {}.", status);
     }
 
     public void setMessageCallback(String inputName, MessageCallback callback) {
