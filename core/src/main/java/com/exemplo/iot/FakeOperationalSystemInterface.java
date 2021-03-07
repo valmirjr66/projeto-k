@@ -1,12 +1,15 @@
 package com.exemplo.iot;
 
+import static java.util.stream.Collectors.toList;
+
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Scanner;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -23,10 +26,11 @@ public class FakeOperationalSystemInterface implements OperationalSystemInterfac
         BufferedImage bufferedImage = null;
 
         try {
-            byte[] imageByte = Base64.getDecoder().decode(getEncodedImage().getBytes());
-            ByteArrayInputStream imageInputStream = new ByteArrayInputStream(imageByte);
-
-            bufferedImage = ImageIO.read(imageInputStream);
+            List<String> fileNamesList = Arrays.asList(new File("/images").list());
+            String fileName = MessageFormat.format("/images/{0}", getLastFileName(fileNamesList));
+            System.out.println(fileName);
+            File imageFile = new File(fileName);
+            bufferedImage = ImageIO.read(imageFile);
         } catch (IOException exception) {
             logger.error("Failed while trying to get image from camera.", exception);
         }
@@ -34,19 +38,19 @@ public class FakeOperationalSystemInterface implements OperationalSystemInterfac
         return bufferedImage;
     }
 
+    private String getLastFileName(List<String> fileNamesList) {
+        List<String> filteredFileNamesList = new ArrayList<>();
+        filteredFileNamesList = fileNamesList.stream().filter(x -> x.matches("^image\\d{1,}\\.(png|jpg|jpeg)$"))
+                .collect(toList());
+        Collections.sort(filteredFileNamesList);
+
+        return filteredFileNamesList.get(filteredFileNamesList.size() - 1);
+    }
+
     public void sendRadioSignal(String channel, byte[] bytesToSend) {
         Assert.notNull(bytesToSend, "BytesToSend must not be null.");
         Assert.isTrue(bytesToSend.length > 0, "BytesToSend must have some element.");
 
         logger.info("Sending radio signal for channel {}.", channel);
-    }
-
-    private String getEncodedImage() throws FileNotFoundException {
-        File imageFile = new File("image.txt");
-        Scanner reader = new Scanner(imageFile);
-        String line = reader.nextLine();
-        reader.close();
-
-        return line;
     }
 }

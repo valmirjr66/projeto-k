@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import boofcv.abst.scene.ImageClassifier;
 import boofcv.factory.scene.ClassifierAndSource;
@@ -15,6 +16,7 @@ import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.Planar;
 import deepboof.io.DeepBoofDataBaseOps;
 
+@Component
 public class ImageProcessor {
     private static final Logger logger = LoggerFactory.getLogger(ImageProcessor.class);
 
@@ -34,7 +36,10 @@ public class ImageProcessor {
     private ImageClassifier<Planar<GrayF32>> getClassifier() {
         ClassifierAndSource classifierSource = FactoryImageClassifier.nin_imagenet();
 
-        File modelPath = DeepBoofDataBaseOps.downloadModel(classifierSource.getSource(), new File("download_data"));
+        logger.info("Downloading image classification model.");
+
+        File modelPath = DeepBoofDataBaseOps.downloadModel(classifierSource.getSource(),
+                new File("/models/trained_model"));
 
         ImageClassifier<Planar<GrayF32>> classifier = classifierSource.getClassifier();
 

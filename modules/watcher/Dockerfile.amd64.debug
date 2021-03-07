@@ -1,17 +1,16 @@
 FROM openjdk:8-jdk-alpine
+
 WORKDIR /app
 COPY /target/watcher-1.0.0-SNAPSHOT.jar ./app.jar
 
 RUN addgroup -g 1000 -S moduleuser && \
     adduser -u 1000 -S moduleuser -G moduleuser
 
-RUN mkdir /models
-RUN chown moduleuser /models
-RUN chmod 700 /models
-
 RUN mkdir /images
+RUN mkdir /models
+RUN mkdir /models/trained_model
 
-COPY ./image.txt /images
+COPY trained_model /models/trained_model
 
 USER moduleuser
 EXPOSE 5005/tcp

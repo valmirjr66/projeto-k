@@ -56,7 +56,23 @@
                         "status": "running",
                         "restartPolicy": "always",
                         "settings": {
-                            "image": "${MODULES.watcher.amd64}"
+                            "image": "${MODULES.watcher.amd64}",
+                            "createOptions": {
+                                "HostConfig": {
+                                    "Binds": [
+                                        "/home/valmir/images:/images"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "PresenceDetector": {
+                        "version": "1.0",
+                        "type": "docker",
+                        "status": "running",
+                        "restartPolicy": "always",
+                        "settings": {
+                            "image": "${MODULES.presence_detector.amd64}"
                         }
                     }
                 }
@@ -66,7 +82,8 @@
             "properties.desired": {
                 "schemaVersion": "1.0",
                 "routes": {
-                    "WathcerToCloud": "FROM /messages/modules/Watcher/outputs/* INTO $upstream"
+                    "PresenceDetectorToWatcher": "FROM /messages/modules/PresenceDetector/outputs/mainOutput INTO BrokeredEndpoint(\"/modules/Watcher/inputs/mainInput\")",
+                    "WatcherToCloud": "FROM /messages/modules/Watcher/outputs/mainOutput INTO $upstream"
                 },
                 "storeAndForwardConfiguration": {
                     "timeToLiveSecs": 7200

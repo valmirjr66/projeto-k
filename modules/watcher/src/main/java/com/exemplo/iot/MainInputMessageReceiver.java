@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MainInputMessageReceiver {
     private static final Logger logger = LoggerFactory.getLogger(MainInputMessageReceiver.class);
-    private static final String INPUT_TO_MONITOR = "mainInput";
+    private static final String MAIN_INPUT = "mainInput";
     private final IoTHubInterface interfaceForIotHub;
     private final OperationalSystemInterface operationalSystemInterface;
     private final ImageProcessor imageProcessor;
@@ -29,15 +29,15 @@ public class MainInputMessageReceiver {
 
     @PostConstruct
     public void setMessageCallback() {
-        interfaceForIotHub.setMessageCallback(INPUT_TO_MONITOR, this::messageCallback);
+        interfaceForIotHub.setMessageCallback(MAIN_INPUT, this::messageCallback);
     }
 
     public IotHubMessageResult messageCallback(Message message, Object callbackContext) {
-        logger.info("Message received by Watcher.");
-
         CompletableFuture.runAsync(() -> {
             BufferedImage cameraSnapshot = this.operationalSystemInterface.getSnapshotFromCamera();
+
             String imageClassification = imageProcessor.classifyImage(cameraSnapshot);
+
             logger.info("Snapshot image classification is {}.", imageClassification);
         });
 

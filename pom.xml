@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <start-class>com.exemplo.iot.App</start-class>
+        <start-class>com.exemplo.iot.DeviceApplication</start-class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -103,5 +103,6 @@
     <modules>
         <module>core</module>
         <module>modules/watcher</module>
+        <module>modules/presence_detector</module>
     </modules>
 </project>
